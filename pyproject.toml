@@ -41,7 +41,8 @@ jupyterlab    = ">=4.0"
 ipywidgets    = ">=8.0"
 ipykernel     = ">=6.0"
 kaleido       = ">=0.2"           # plotly static image export (A7)
-# altair — not compatible with Python 3.14 yet; prim.inspect_tradeoff() uses matplotlib fallback
+# altair — DO NOT install: ≥6.0 raises TypeError on Python 3.14, breaking ema_workbench.analysis.
+# ema_workbench[graph] pulls it in transitively — avoid that extra. Fix: pip uninstall altair
 
 [build-system]
 requires      = ["poetry-core"]

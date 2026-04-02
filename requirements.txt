@@ -22,4 +22,9 @@ tqdm>=4.0           # A1, A2, A3, A8: progress bars
 jupyterlab>=4.0
 ipywidgets>=8.0
 kaleido>=0.2        # plotly static image export (A7 maps)
-# altair>=5.0,<6.0  # interactive PRIM tradeoff plots — not compatible with Python 3.14 yet
+# altair — DO NOT install on Python 3.14+
+#   altair ≥6.0 uses TypedDict(closed=True) which raises TypeError (not ImportError) on
+#   Python 3.14, bypassing the try/except guard in ema_workbench/analysis/prim.py and
+#   breaking *all* of ema_workbench.analysis. ema_workbench[graph] pulls it in transitively.
+#   Fix if accidentally installed: pip uninstall altair
+#   ema_workbench falls back to matplotlib for prim.inspect_tradeoff() without altair.
