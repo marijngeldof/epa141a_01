@@ -36,6 +36,7 @@ After setup your working directory looks like this. Everything you need for the 
 ```text
 epa141a/                              ← open this folder in VS Code / JupyterLab
 │
+├── environment.yml                   ← conda environment definition (run once to set up)
 ├── assignments_ema/                  ← your assignment notebooks
 │   ├── assignment_01_exploratory_modeling.ipynb
 │   ├── assignment_02_sensitivity_analysis.ipynb
