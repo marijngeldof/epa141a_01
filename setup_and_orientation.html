@@ -1016,7 +1016,7 @@ sudo dnf install git -y</code></pre>
       <div class="step-circle">1</div>
       <div>
         <div class="step-title">Download or clone the course repository</div>
-        <div class="step-sub">This gives you the assignments, JUSTICE source code, and all configuration files.</div>
+        <div class="step-sub">This gives you the assignments, labs, and all configuration files.</div>
       </div>
     </div>
 
@@ -1034,7 +1034,7 @@ sudo dnf install git -y</code></pre>
         <li>Unzip to a location <em>without spaces or special characters</em> in the path (e.g. <code class="inline">~/courses/epa141a</code>).</li>
       </ol>
       <p style="margin-top:12px"><strong>Option B — Git clone</strong></p>
-<pre><code class="language-bash">git clone https://github.com/&lt;org&gt;/epa141a.git
+<pre><code class="language-bash">git clone https://github.com/Hippo-Delft-AI-Lab/epa141a.git
 cd epa141a</code></pre>
     </div>
 
@@ -1046,7 +1046,7 @@ cd epa141a</code></pre>
         <li>Unzip to a location <em>without spaces or special characters</em> in the path (e.g. <code class="inline">C:\courses\epa141a</code>).</li>
       </ol>
       <p style="margin-top:12px"><strong>Option B — Git clone</strong></p>
-<pre><code class="language-bash">git clone https://github.com/&lt;org&gt;/epa141a.git
+<pre><code class="language-bash">git clone https://github.com/Hippo-Delft-AI-Lab/epa141a.git
 cd epa141a</code></pre>
       <div class="callout info" style="margin-top:10px">
         <span class="callout-icon">ℹ️</span>
@@ -1062,18 +1062,26 @@ cd epa141a</code></pre>
         <li>Unzip to a location <em>without spaces or special characters</em> in the path (e.g. <code class="inline">~/courses/epa141a</code>).</li>
       </ol>
       <p style="margin-top:12px"><strong>Option B — Git clone</strong></p>
-<pre><code class="language-bash">git clone https://github.com/&lt;org&gt;/epa141a.git
+<pre><code class="language-bash">git clone https://github.com/Hippo-Delft-AI-Lab/epa141a.git
 cd epa141a</code></pre>
     </div>
 
     <div class="callout warn">
       <span class="callout-icon">⚠️</span>
-      <div>All subsequent commands must be run from the <strong>repository root</strong> — the folder that contains <code class="inline">JUSTICE-main/</code>, <code class="inline">assignments_ema/</code>, and <code class="inline">requirements.txt</code>.</div>
+      <div>All subsequent commands must be run from the <strong>repository root</strong> — the folder that contains <code class="inline">assignments_ema/</code> and <code class="inline">requirements.txt</code>.</div>
+    </div>
+
+    <h3>Also clone the JUSTICE model</h3>
+    <p>JUSTICE is maintained in a <strong>separate repository</strong> and must be cloned into a folder called <code class="inline">JUSTICE-main/</code> <em>inside</em> the course repo root. From the repo root:</p>
+<pre><code class="language-bash">git clone https://github.com/pollockDeVis/JUSTICE.git JUSTICE-main</code></pre>
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <div>The folder <strong>must</strong> be named <code class="inline">JUSTICE-main/</code> — the assignment notebooks and the install command in Step 4 both expect this exact name.</div>
     </div>
 
     <h3>What's inside</h3>
     <ul>
-      <li><code class="inline">JUSTICE-main/</code> — the JUSTICE climate–economy model source code</li>
+      <li><code class="inline">JUSTICE-main/</code> — the JUSTICE climate–economy model (cloned separately above)</li>
       <li><code class="inline">assignments_ema/</code> — student assignment notebooks (A1 – A8)</li>
       <li><code class="inline">model_answers_ema/</code> — model answer notebooks</li>
       <li><code class="inline">labs/</code> — lab notebooks (L1 – L6) using the Lake Problem</li>
@@ -1158,7 +1166,7 @@ cd epa141a</code></pre>
       <div class="step-circle">4</div>
       <div>
         <div class="step-title">Install JUSTICE in editable mode</div>
-        <div class="step-sub">JUSTICE is included in the repo as source code. Installing it with <code>--no-deps</code> makes it importable without pulling in conflicting packages.</div>
+        <div class="step-sub">Make the JUSTICE source you cloned in Step 1 importable. The <code>--no-deps</code> flag prevents JUSTICE from overwriting the pinned versions installed in Step 3.</div>
       </div>
     </div>
 
@@ -1293,7 +1301,7 @@ Python 3.12.x</code></pre>
   <h2>Troubleshooting</h2>
 
   <h3>ModuleNotFoundError: No module named 'justice'</h3>
-  <p>JUSTICE was not installed, or you are using the wrong kernel. Re-run Step 4 and confirm the <strong>EPA141A (JUSTICE)</strong> kernel is selected in JupyterLab.</p>
+  <p>Either JUSTICE was not cloned or not installed. First confirm that a <code class="inline">JUSTICE-main/</code> folder exists in the repo root (if not, re-run the clone command from Step 1). Then re-run Step 4 and confirm the <strong>EPA141A (JUSTICE)</strong> kernel is selected in JupyterLab.</p>
 
   <h3>Kernel not found / kernel keeps dying</h3>
   <p>Re-run Step 5 to re-register the kernel. If the kernel dies immediately, check available RAM — JUSTICE loads FAIR climate data on startup and requires at least 2 GB free.</p>
