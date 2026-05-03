@@ -1,4 +1,4 @@
-# JUSTICE Reference for Actors
+# Actor Mandates to JUSTICE Guide
 
 This page contains the shared reference material that applies to **all actors** regardless of which bloc they represent.
 
