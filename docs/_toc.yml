@@ -11,6 +11,7 @@ chapters:
       - file: installation/graphical
       - file: installation/cli
       - file: installation/vscode
+      - file: installation/delftblue
   - file: labs/index
     sections:
       - file: labs/lab_01
