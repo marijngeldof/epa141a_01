@@ -242,7 +242,7 @@ def model_wrapper_local(**kwargs) -> tuple[float, float, float, float]:
     frac = fraction_of_ensemble_above_threshold(
         temperature=data["global_temperature"],
         temperature_year_index=temp_year_idx,
-        threshold=2.0,
+        threshold=1.5,
     )
     frac = float(frac) if np.isfinite(float(frac)) else 1.0  # worst-case fraction
 
