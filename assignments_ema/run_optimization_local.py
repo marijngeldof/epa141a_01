@@ -198,6 +198,7 @@ def model_wrapper_local(**kwargs) -> tuple[float, float, float, float]:
             damage_function_type=damage_function_type,
             abatement_type=abatement_type,
             social_welfare_function_type=swf_type,
+            backstop_cost=200
         )
     else:
         model_wrapper_local._instance.reset_model()
