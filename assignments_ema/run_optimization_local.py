@@ -191,15 +191,27 @@ def model_wrapper_local(**kwargs) -> tuple[float, float, float, float]:
     # Each worker process (spawned by MultiprocessingEvaluator) initialises its
     # own JUSTICE model once, then reuses it via reset_model().
     if not hasattr(model_wrapper_local, "_instance"):
-        model_wrapper_local._instance = JUSTICE(
+        from justice.abatement.abatement_enerdata import AbatementEnerdata  # add this import
+
+        instance = JUSTICE(
             scenario=scenario,
             climate_ensembles=list(ensemble_indices),
             economy_type=economy_type,
             damage_function_type=damage_function_type,
             abatement_type=abatement_type,
-            social_welfare_function_type=swf_type,
-            backstop_cost=200
+            social_welfare_function_type=swf_type
         )
+
+        # Replace abatement module on the SAME instance before storing it
+        instance.abatement = AbatementEnerdata(
+            input_dataset=instance.data_loader,
+            time_horizon=instance.time_horizon,
+            scenario=instance.scenario,
+            backstop_cost=200,
+            backstop_cost_decline_rate_per_5_year=0.101
+        )
+
+        model_wrapper_local._instance = instance
     else:
         model_wrapper_local._instance.reset_model()
 
