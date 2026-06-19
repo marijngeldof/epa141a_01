@@ -40,7 +40,7 @@ import pandas as pd
 _SCRIPT_DIR   = os.path.dirname(os.path.abspath(__file__))
 _JUSTICE_ROOT = os.path.normpath(os.path.join(_SCRIPT_DIR, "../JUSTICE-main"))
 _CONFIG_DIR   = os.path.normpath(os.path.join(_SCRIPT_DIR, "../config"))
-RESULTS_ROOT  = os.path.join(_SCRIPT_DIR, "results")
+RESULTS_ROOT  = os.path.join(_SCRIPT_DIR, "results_refs")
 
 if _JUSTICE_ROOT not in sys.path:
     sys.path.insert(0, _JUSTICE_ROOT)
@@ -56,9 +56,10 @@ from justice.util.emission_control_constraint import EmissionControlConstraint
 from justice.util.model_time import TimeHorizon
 from justice.objectives.objective_functions import years_above_temperature_threshold
 from solvers.emodps.rbf import RBF
+from justice.abatement.abatement_enerdata import AbatementEnerdata
 
 # ── Config ────────────────────────────────────────────────────────────────────
-with open(os.path.join(_CONFIG_DIR, "config_ssp245.json")) as _fh:
+with open(os.path.join(_CONFIG_DIR, "config_student.json")) as _fh:
     _cfg = json.load(_fh)
 
 _time_horizon = TimeHorizon(
@@ -83,9 +84,14 @@ C_SHAPE, R_SHAPE, W_SHAPE = _rbf_tmp.get_shape()
 
 _MAX_TEMP, _MIN_TEMP = 16.0, 0.0
 _MAX_DIFF, _MIN_DIFF =  2.0, 0.0
-
-OBJECTIVES = ["welfare", "years_above_2C", "welfare_loss_damage", "welfare_loss_abatement"]
-
+BACKSTOP_COST = 200
+BACKSTOP_COST_DECLINE_RATE_PER_5_YEAR = 0.101
+OBJECTIVES = [
+    "welfare",
+    "years_above_2C",
+    "welfare_loss_damage",
+    "welfare_loss_abatement",
+]
 
 # ── Model wrapper (must be at module level for multiprocessing) ────────────────
 def model_wrapper_reeval(**kwargs) -> tuple:
@@ -106,7 +112,7 @@ def model_wrapper_reeval(**kwargs) -> tuple:
         emission_control_start_timestep = EC_START_TS,
         min_emission_control_rate       = 0.01,
     )
-
+    JUSTICE.hard_reset()
     model = JUSTICE(
         scenario                    = SCENARIO,
         climate_ensembles           = [ensemble_index],
@@ -115,6 +121,14 @@ def model_wrapper_reeval(**kwargs) -> tuple:
         abatement_type              = Abatement.ENERDATA,
         social_welfare_function_type= WelfareFunction.UTILITARIAN.value[0],
     )
+    model.abatement = AbatementEnerdata(
+    input_dataset=model.data_loader,
+    time_horizon=model.time_horizon,
+    scenario=model.scenario,
+    backstop_cost=BACKSTOP_COST,
+    backstop_cost_decline_rate_per_5_year=BACKSTOP_COST_DECLINE_RATE_PER_5_YEAR,
+    )
+
     no_ens          = model.no_of_ensembles   # 1
     ecr             = np.zeros((N_REGIONS, N_TIMESTEPS, no_ens))
     constrained_ecr = np.zeros_like(ecr)
@@ -178,11 +192,10 @@ if __name__ == "__main__":
     SCENARIO_INDICES = list(np.linspace(1, 1000, N_SCENARIOS, dtype=int))
 
     # ── Load reference set ─────────────────────────────────────────────────────
-    ref_path = os.path.join(RESULTS_ROOT, "reference_set_utilitarian.csv")
+    ref_path = os.path.join(RESULTS_ROOT, "reference_set_utilitarian_1_5_bs200_dec0101.csv")
     if not os.path.exists(ref_path):
-        ref_path = os.path.join(RESULTS_ROOT, "UTILITARIAN_reference_set.csv")
-        print(f"Grand reference set not found — falling back to {ref_path}")
-
+        raise FileNotFoundError(f"Reference set not found: {ref_path}")
+    print(f"Using reference set: {ref_path}")
     ref_set  = pd.read_csv(ref_path)
     ref_set.columns = [c.replace(" ", "_") for c in ref_set.columns]
     ref_set  = ref_set[ref_set["welfare"] < 1e5].reset_index(drop=True)
@@ -193,11 +206,15 @@ if __name__ == "__main__":
     N_POLICIES   = len(ref_set)
     N_OBJECTIVES = len(OBJECTIVES)
 
-    RESULTS_PATH     = os.path.join(RESULTS_ROOT,
-                                    f"reeval_utilitarian_{N_POLICIES}p_{N_SCENARIOS}s.npy")
-    EXPERIMENTS_PATH = os.path.join(RESULTS_ROOT,
-                                    f"reeval_utilitarian_{N_POLICIES}p_{N_SCENARIOS}s_experiments.csv")
+    RESULTS_PATH = os.path.join(
+    RESULTS_ROOT,
+    f"reeval_utilitarian_bs200_dec0101_{N_POLICIES}p_{N_SCENARIOS}s.npy",
+)
 
+    EXPERIMENTS_PATH = os.path.join(
+    RESULTS_ROOT,
+    f"reeval_utilitarian_bs200_dec0101_{N_POLICIES}p_{N_SCENARIOS}s_experiments.csv",
+)
     print(f"Policies  : {N_POLICIES}")
     print(f"Scenarios : {N_SCENARIOS}  (FAIR indices: {SCENARIO_INDICES[:3]} … {SCENARIO_INDICES[-3:]})")
     print(f"Cache     : {RESULTS_PATH}")
